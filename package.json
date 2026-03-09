@@ -1,0 +1,17 @@
+{
+  "name": "credpal-app",
+  "version": "1.0.0",
+  "description": "CredPal DevOps assessment - Node.js web application",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test src/routes/health.test.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}

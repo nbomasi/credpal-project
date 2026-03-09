@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CredPal - DevOps Assessment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo">CredPal</a>
+      <nav class="nav">
+        <span class="nav-tag">Shop Now, Pay Later</span>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <h1>Flexible pay for every purchase</h1>
+      <p class="hero-subtitle">API endpoints for health checks, status, and processing</p>
+    </section>
+
+    <section class="endpoints">
+      <h2>API Endpoints</h2>
+      <div class="endpoint-cards">
+        <div class="endpoint-card">
+          <span class="method method-get">GET</span>
+          <h3>/health</h3>
+          <p>Health check endpoint for monitoring</p>
+          <button class="btn btn-outline" data-endpoint="/health" data-method="GET">Test</button>
+        </div>
+        <div class="endpoint-card">
+          <span class="method method-get">GET</span>
+          <h3>/status</h3>
+          <p>Application status and version info</p>
+          <button class="btn btn-outline" data-endpoint="/status" data-method="GET">Test</button>
+        </div>
+        <div class="endpoint-card">
+          <span class="method method-post">POST</span>
+          <h3>/process</h3>
+          <p>Process data submissions</p>
+          <button class="btn btn-outline" data-endpoint="/process" data-method="POST">Test</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="response-section">
+      <h2>Response</h2>
+      <pre class="response-output" id="responseOutput">Click an endpoint to test</pre>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>CredPal &middot; Building a more inclusive financial ecosystem</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

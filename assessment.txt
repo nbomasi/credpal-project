@@ -1,0 +1,75 @@
+ Assessment Overview
+
+Submission format: GitHub repository + README
+
+Background
+You are joining a fast-growing company and need to set up a robust DevOps pipeline and infrastructure for a simple Node.js application. The application should be production-ready and deployable to a cloud environment with full CI/CD automation.
+
+
+Your Task
+Build a production-ready DevOps pipeline for a basic Node.js web application. The application will have a few basic endpoints:
+
+GET /health
+GET /status
+POST /process
+
+The application should run on port 3000.
+
+
+Part 1 – Containerization
+Create a Dockerfile for the Node.js application, following best practices (multi-stage build, non-root user, etc.).
+Create a docker-compose.yml that:
+Runs the Node.js application
+Includes a database like PostgreSQL or Redis
+Configures environment variables for both services
+
+
+Part 2 – CI/CD (GitHub Actions)
+Create a GitHub Actions pipeline that runs on:
+
+Pushes to main
+Pull requests to main
+The pipeline should:
+
+Install dependencies
+Run tests (optional: write a simple test)
+Build the Docker image
+Push the image to DockerHub or GitHub Container Registry
+
+
+Part 3 – Infrastructure as Code (Terraform)
+Use Terraform to provision:
+
+A VPC (or equivalent) with proper security groups
+Compute (EC2 instance or ECS service)
+Load balancer for traffic distribution
+SSL certificate for HTTPS
+
+
+Part 4 – Deployment Strategy
+Ensure:
+
+Zero-downtime deployment: Use rolling deployments or blue-green deployment.
+Manual approval for production deployment (if applicable).
+
+
+Part 5 – Security & Observability
+Implement secrets management (no secrets in GitHub).
+Set up HTTPS for the application.
+Ensure the application runs as a non-root user inside the container.
+Set up basic logging (e.g., using console logs) and health checks for the app.
+
+
+Part 6 – Documentation
+Provide a README.md explaining:
+How to run the application locally
+How to access the app
+How to deploy the application
+Key decisions you made for security, CI/CD, and infrastructure
+
+The submission deadline is Wednesday, 11th March 2026 by 4pm
+
+Please note that only qualified candidates will be contacted for the next phase.
+
+Do acknowledge receipt of this email.
+
