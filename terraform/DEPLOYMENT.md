@@ -30,7 +30,7 @@ Before first `terraform init`, create the backend resources for each environment
 
 ### 2. Update Variables
 
-Edit `envs/<env>/terraform.tfvars` for each environment:
+Edit `environments/<env>/terraform.tfvars` for each environment:
 - `container_image` – your GHCR image URI
 - `availability_zones` – AZs for your region
 - For HTTPS: `domain_name` and `route53_zone_id`
@@ -41,25 +41,25 @@ Edit `envs/<env>/terraform.tfvars` for each environment:
 
 ```bash
 cd terraform
-terraform init -backend-config=envs/dev/backend.hcl
-terraform plan -var-file=envs/dev/terraform.tfvars
-terraform apply -var-file=envs/dev/terraform.tfvars
+terraform init -backend-config=environments/dev/backend.hcl
+terraform plan -var-file=environments/dev/terraform.tfvars
+terraform apply -var-file=environments/dev/terraform.tfvars
 ```
 
 ### Staging
 
 ```bash
-terraform init -backend-config=envs/staging/backend.hcl
-terraform plan -var-file=envs/staging/terraform.tfvars
-terraform apply -var-file=envs/staging/terraform.tfvars
+terraform init -backend-config=environments/staging/backend.hcl
+terraform plan -var-file=environments/staging/terraform.tfvars
+terraform apply -var-file=environments/staging/terraform.tfvars
 ```
 
 ### Prod
 
 ```bash
-terraform init -backend-config=envs/prod/backend.hcl
-terraform plan -var-file=envs/prod/terraform.tfvars
-terraform apply -var-file=envs/prod/terraform.tfvars
+terraform init -backend-config=environments/prod/backend.hcl
+terraform plan -var-file=environments/prod/terraform.tfvars
+terraform apply -var-file=environments/prod/terraform.tfvars
 ```
 
 ## Switching Environments
@@ -67,7 +67,7 @@ terraform apply -var-file=envs/prod/terraform.tfvars
 When changing environments, reinitialize the backend:
 
 ```bash
-terraform init -reconfigure -backend-config=envs/prod/backend.hcl
+terraform init -reconfigure -backend-config=environments/prod/backend.hcl
 ```
 
 ## CI/CD Deployment

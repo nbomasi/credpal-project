@@ -100,12 +100,12 @@ jobs:
       - name: Terraform Init
         working-directory: terraform
         run: |
-          terraform init -backend-config=envs/prod/backend.hcl
+          terraform init -backend-config=environments/prod/backend.hcl
 
       - name: Terraform Plan
         working-directory: terraform
         run: |
-          terraform plan -var-file=envs/prod/terraform.tfvars \
+          terraform plan -var-file=environments/prod/terraform.tfvars \
             -var="container_image=${{ env.REGISTRY }}/${{ github.repository }}:${{ github.sha }}" \
             -out=tfplan
 

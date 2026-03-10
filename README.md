@@ -52,12 +52,12 @@ App runs at http://localhost:3000
 
 ```bash
 cd terraform
-terraform init -backend-config=envs/prod/backend.hcl
-terraform plan -var-file=envs/prod/terraform.tfvars
-terraform apply -var-file=envs/prod/terraform.tfvars
+terraform init -backend-config=environments/prod/backend.hcl
+terraform plan -var-file=environments/prod/terraform.tfvars
+terraform apply -var-file=environments/prod/terraform.tfvars
 ```
 
-Update `container_image` in `envs/prod/terraform.tfvars` with your GHCR image before apply.
+Update `container_image` in `terraform/environments/prod/terraform.tfvars` with your GHCR image before apply.
 
 ## Key Decisions
 
