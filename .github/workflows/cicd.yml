@@ -106,7 +106,7 @@ jobs:
         working-directory: terraform
         run: |
           terraform plan -var-file=environments/prod/terraform.tfvars \
-            -var="container_image=${{ env.REGISTRY }}/${{ github.repository }}:${{ github.sha }}" \
+            -var="container_image=${{ env.REGISTRY }}/${{ github.repository }}:latest" \
             -out=tfplan
 
       - name: Terraform Apply

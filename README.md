@@ -57,7 +57,7 @@ terraform plan -var-file=environments/prod/terraform.tfvars
 terraform apply -var-file=environments/prod/terraform.tfvars
 ```
 
-Update `container_image` in `terraform/environments/prod/terraform.tfvars` with your GHCR image before apply.
+Update `container_image` in `terraform/environments/prod/terraform.tfvars` with your GHCR image before apply. For CI/CD: make the GHCR package **public** (Package settings → Change visibility) so ECS can pull the image.
 
 ## Key Decisions
 
