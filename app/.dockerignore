@@ -3,11 +3,8 @@ node_modules
 .gitignore
 .env
 .env.*
+docker-compose.yml
 *.log
 .DS_Store
-.terraform
-*.tfstate
-*.tfstate.*
-assessment.txt
 coverage
 *.md

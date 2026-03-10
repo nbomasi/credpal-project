@@ -7,9 +7,7 @@ terraform {
       version = "~> 5.0"
     }
   }
-  backend "local" {
-    path = "terraform.tfstate"
-  }
+  backend "s3" {}
 }
 
 module "vpc" {

@@ -70,29 +70,17 @@ When changing environments, reinitialize the backend:
 terraform init -reconfigure -backend-config=envs/prod/backend.hcl
 ```
 
-## Local State (Development)
+## CI/CD Deployment
 
-For local state during development, replace the backend block in `main.tf`:
+The GitHub Actions workflow deploys via Terraform after a successful build. Required setup:
 
-```hcl
-backend "local" {
-  path = "terraform.tfstate"
-}
-```
+1. **GitHub Secrets** (Settings → Secrets → Actions):
+   - `AWS_ACCESS_KEY_ID`
+   - `AWS_SECRET_ACCESS_KEY`
 
-Then run:
+2. **GitHub Variable** (optional): `AWS_REGION` (default: eu-west-3)
 
-```bash
-terraform init
-terraform plan -var-file=envs/prod/terraform.tfvars
-terraform apply -var-file=envs/prod/terraform.tfvars
-```
-
-To move from local to S3:
-
-```bash
-terraform init -migrate-state -backend-config=envs/prod/backend.hcl
-```
+3. **S3 Backend**: The state bucket and DynamoDB table must exist before the first deploy.
 
 ## Environment Differences
 
