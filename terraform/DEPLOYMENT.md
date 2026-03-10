@@ -82,6 +82,8 @@ The GitHub Actions workflow deploys via Terraform after a successful build. Requ
 
 3. **S3 Backend**: The state bucket and DynamoDB table must exist before the first deploy.
 
+4. **GHCR Image Visibility**: ECS pulls from GitHub Container Registry. Make the package **public**: GitHub repo → Packages → credpal-project → Package settings → Change visibility → Public. Private images require repository credentials in the task definition.
+
 ## Environment Differences
 
 | Setting | dev | staging | prod |

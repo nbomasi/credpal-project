@@ -89,3 +89,22 @@ resource "aws_lb_listener" "https" {
     target_group_arn = aws_lb_target_group.app.arn
   }
 }
+
+data "aws_route53_zone" "selected" {
+  count   = var.create_acm_cert && var.route53_zone_id != "" ? 1 : 0
+  zone_id = var.route53_zone_id
+}
+
+resource "aws_route53_record" "alias" {
+  count = var.create_acm_cert && var.route53_zone_id != "" ? 1 : 0
+
+  zone_id = var.route53_zone_id
+  name    = trimsuffix(var.domain_name, ".${data.aws_route53_zone.selected[0].name}")
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.main.dns_name
+    zone_id                = aws_lb.main.zone_id
+    evaluate_target_health = true
+  }
+}
