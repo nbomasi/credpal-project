@@ -1,0 +1,12 @@
+aws_region   = "eu-west-3"
+project_name = "credpal"
+environment  = "prod"
+
+availability_zones   = ["eu-west-3a", "eu-west-3b",]
+private_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
+public_subnet_cidrs  = ["10.0.101.0/24", "10.0.102.0/24"]
+
+container_image = "ghcr.io/nbomasi/credpal-project:latest"
+
+# domain_name   = "credpal.infra.dareyio.com"
+# route53_zone_id = "Z1234567890ABC"
