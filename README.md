@@ -1,18 +1,68 @@
 # CredPal DevOps Assessment
 
-Production-ready Node.js application with full CI/CD and infrastructure automation.
+Production-ready Node.js application with CI/CD and Terraform infrastructure.
+
+---
+
+## Table of Contents
+
+- [Application](#application)
+- [Architecture](#architecture)
+- [How to Run Locally](#how-to-run-locally)
+- [How to Access the App](#how-to-access-the-app)
+- [How to Deploy](#how-to-deploy)
+- [Key Decisions](#key-decisions)
+
+---
 
 ## Application
 
-- **Endpoints**: `GET /health`, `GET /status`, `POST /process`
-- **Port**: 3000
+| Item | Value |
+|------|-------|
+| Endpoints | `GET /health`, `GET /status`, `POST /process` |
+| Port | 3000 |
 
-## Run Locally
+---
 
-### Prerequisites
+## Architecture
 
-- Node.js 20+
-- Docker & Docker Compose (optional, for containerized run)
+```mermaid
+flowchart TB
+    subgraph GitHub
+        Repo[Repository]
+        Actions[GitHub Actions]
+        GHCR[GHCR]
+    end
+
+    subgraph AWS
+        subgraph VPC
+            ALB[Application Load Balancer]
+            subgraph Private["Private Subnets"]
+                ECS[ECS Fargate]
+            end
+        end
+        ACM[ACM Certificate]
+        R53[Route53]
+        CW[CloudWatch Logs]
+    end
+
+    Repo --> Actions
+    Actions -->|Build & Push| GHCR
+    Actions -->|Terraform Apply| AWS
+    GHCR -->|Pull Image| ECS
+    R53 -->|HTTPS| ALB
+    ALB -->|Route| ECS
+    ECS -->|Logs| CW
+    ACM --> ALB
+```
+
+**Flow:** Push to `main` → Test → Build → Push image to GHCR → Manual approval → Terraform apply → ECS pulls image, ALB routes traffic via HTTPS.
+
+---
+
+## How to Run Locally
+
+**Prerequisites:** Node.js 20+, or Docker & Docker Compose
 
 ### Option 1: Node.js
 
@@ -22,33 +72,31 @@ npm install
 npm start
 ```
 
-App runs at http://localhost:3000
-
 ### Option 2: Docker Compose
 
 ```bash
 cd app
 cp .env.example .env
-# Edit .env with POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB
+# Edit .env: POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB
 docker compose up -d
 ```
 
-App runs at http://localhost:3000
+---
 
-## Access the App
+## How to Access the App
 
-- **Local**: http://localhost:3000
-- **Deployed**: Use `terraform output app_url` after deployment
+| Environment | URL |
+|-------------|-----|
+| Local | http://localhost:3000 |
+| Deployed | `terraform output app_url` or configured domain (e.g. https://credpal.infra.dareyio.com) |
 
-## Deploy
+---
 
-### Prerequisites
+## How to Deploy
 
-- AWS CLI configured
-- Terraform 1.5+
-- S3 bucket and DynamoDB table for state (see `terraform/DEPLOYMENT.md`)
+**Prerequisites:** AWS CLI configured, Terraform 1.5+, S3 bucket and DynamoDB table for state (see [DEPLOYMENT.md](terraform/DEPLOYMENT.md))
 
-### Deploy Infrastructure
+### Manual Deployment
 
 ```bash
 cd terraform
@@ -57,32 +105,47 @@ terraform plan -var-file=environments/prod/terraform.tfvars
 terraform apply -var-file=environments/prod/terraform.tfvars
 ```
 
-Update `container_image` in `terraform/environments/prod/terraform.tfvars` with your GHCR image before apply. For CI/CD: make the GHCR package **public** (Package settings → Change visibility) so ECS can pull the image.
+### CI/CD Deployment
+
+1. Add GitHub Secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
+2. Configure `production` environment with required reviewers (Settings → Environments)
+3. Push to `main` → Build runs → Deploy waits for approval → Terraform apply
+
+After a successful deploy, paste the public URL (e.g. https://credpal.infra.dareyio.com) in your browser to load the app.
+
+**Note:** Set `container_image` in `terraform/environments/prod/terraform.tfvars` before first apply. For CI/CD, make the GHCR package public so ECS can pull the image.
+
+**Database credentials:** If the app uses a database, DB credentials will be stored in AWS Secrets Manager and injected into the ECS task at runtime. No secrets will be committed to the repository.
+
+---
 
 ## Key Decisions
 
 ### Security
 
-- **Secrets**: No secrets in code. `.env` for local, AWS Secrets Manager for production (when integrated). `terraform.tfvars` excluded from git.
-- **Container**: Non-root user (`appuser`), minimal Alpine base, HEALTHCHECK in Dockerfile.
-- **HTTPS**: ACM certificate with Route53 validation when domain is configured.
+| Decision | Implementation |
+|----------|----------------|
+| No secrets in GitHub | `.env` for local (gitignored). CI uses GitHub Secrets for AWS. No hardcoded credentials. |
+| Non-root container | Dockerfile runs as `appuser` (UID 1001) |
+| HTTPS | ACM certificate with Route53 DNS validation. HTTP redirects to HTTPS when domain is set. |
+
+**Repository visibility:** A private repo would be preferred for security. This repo is public so reviewers can access it for the assessment.
 
 ### CI/CD
 
-- **Triggers**: Push and PR to `main`. Build and push only on push to `main`.
-- **Stages**: Test → Build (sequential, build runs only after test passes).
-- **Registry**: GitHub Container Registry (GHCR). No extra secrets; uses `GITHUB_TOKEN`.
-- **Production**: `environment: production` for manual approval before image push.
+| Decision | Implementation |
+|----------|----------------|
+| Triggers | Push and PR to `main`. Build and deploy only on push to `main`. |
+| Pipeline | Test → Build → Deploy (sequential). Deploy requires manual approval. |
+| Registry | GitHub Container Registry. Uses `GITHUB_TOKEN` for push. |
+| Deployment | Terraform apply in deploy job. Uses `latest` image tag. |
 
 ### Infrastructure
 
-- **VPC**: Public `terraform-aws-modules/vpc/aws` module. Private and public subnets, NAT gateway.
-- **Compute**: ECS Fargate (no EC2 management). Rolling deployments via ECS deployment controller.
-- **Load balancer**: ALB with health checks on `/health`.
-- **State**: S3 + DynamoDB per environment (dev, staging, prod). Local backend for development.
-
-### Deployment Strategy (Part 4)
-
-- **Zero-downtime**: ECS rolling deployment with `minimum_healthy_percent = 100` and `maximum_percent = 200`. New tasks start before old ones drain. Circuit breaker with rollback on failure.
-- **Manual approval**: Build and Deploy jobs use `environment: production`. Configure required reviewers in GitHub repo Settings → Environments → production.
-- **CI/CD deploy**: After build, the deploy job runs `terraform apply` to update ECS with the new image. Requires GitHub secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`. Optional: `AWS_REGION` variable (default: eu-west-3).
+| Decision | Implementation |
+|----------|----------------|
+| Compute | ECS Fargate. Rolling deployment (min 100%, max 200%). Circuit breaker with rollback. |
+| Networking | VPC with public and private subnets. NAT gateway for egress. |
+| Load balancing | ALB with health checks on `/health`. |
+| Observability | CloudWatch Logs (14-day retention). Request logging in app. |
+| State | S3 + DynamoDB per environment (dev, staging, prod). |
