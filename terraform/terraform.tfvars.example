@@ -1,3 +1,5 @@
+# Copy to environments/<env>/terraform.tfvars and set values
+
 aws_region   = "eu-west-3"
 project_name = "credpal"
 environment  = "prod"
