@@ -56,7 +56,7 @@ flowchart TB
     ACM --> ALB
 ```
 
-**Flow:** Push to `main` → Test → Build → Push image to GHCR → Manual approval → Terraform apply → ECS pulls image, ALB routes traffic via HTTPS.
+**Flow:** PR and push to `main` trigger the pipeline. Test runs on all. On push/merge to `main`: Build → Push image to GHCR → Manual approval → Terraform apply → ECS pulls image, ALB routes traffic via HTTPS.
 
 ---
 
